@@ -11,45 +11,191 @@
 
 bool Image::load(string filename)
 {
+    std::ifstream ifs;
+    ifs.open(filename, std::ios::binary);
+    // need to spec. binary mode for Windows users
 
-    return false;
+    try {
+        if (ifs.fail())
+        {
+            throw("Can't open input file");
+        }
+        std::string header;
+        int w, h, b;
+        ifs >> header;
+        if (strcmp(header.c_str(), "P6") != 0) throw("Can't read input file");
+        ifs >> w >> h >> b;
+        this->w = w;
+        this->h = h;
+        this->pixels = new Rgb[w * h]; // this is throw an exception if bad_alloc
+        ifs.ignore(256, '\n'); // skip empty lines in necessary until we get to the binary data
+        unsigned char pix[3]; // read each pixel one by one and convert bytes to floats
+        for (int i = 0; i < w * h; ++i)
+        {
+            ifs.read(reinterpret_cast<char *>(pix), 3);
+            this->pixels[i].r = pix[0];
+            this->pixels[i].g = pix[1];
+            this->pixels[i].b = pix[2];
+        }
+        ifs.close();
+    }
+    catch (const char *err) {
+        fprintf(stderr, "%s\n", err);
+        ifs.close();
+        return false;
+    }
 
+    return true;
 }
 bool Image::loadRaw(string filename)
 {
-    return false;
+    // load raw file
+    std::ifstream ifs;
+    ifs.open(filename, std::ios::binary);
+    // need to spec. binary mode for Windows users
+    try{
+        if (ifs.fail())
+        {
+            throw("Can't open input file");
+        }
+        std::string header;
+        int w, h, b;
+        ifs >> header;
+        if (strcmp(header.c_str(), "P6") != 0) throw("Can't read input file");
+        ifs >> w >> h >> b;
+        this->w = w;
+        this->h = h;
+        this->pixels = new Rgb[w * h]; // this is throw an exception if bad_alloc
+        ifs.ignore(256, '\n'); // skip empty lines in necessary until we get to the binary data
+        unsigned char pix[3]; // read each pixel one by one and convert bytes to floats
+        for (int i = 0; i < w * h; ++i)
+        {
+            ifs.read(reinterpret_cast<char *>(pix), 3);
+            this->pixels[i].r = pix[0];
+            this->pixels[i].g = pix[1];
+            this->pixels[i].b = pix[2];
+        }
+        ifs.close();
+    }
+    catch (const char *err)
+    {
+        fprintf(stderr, "%s\n", err);
+        ifs.close();
+        return false;
+    }
+    return true;
 }
 bool Image::savePPM(string filename)
 {
-    return false;
+    // save as PPM
+    std::ofstream ofs;
+    ofs.open(filename, std::ios::binary);
+    // need to spec. binary mode for Windows users
+    try {
+        if (ofs.fail())
+        {
+            throw("Can't open output file");
+        }
+        ofs << "P6\n" << w << " " << h << "\n255\n";
+        for (int i = 0; i < w * h; ++i)
+        {
+            ofs << static_cast<unsigned char>(pixels[i].r) << static_cast<unsigned char>(pixels[i].g) << static_cast<unsigned char>(pixels[i].b);
+        }
+        ofs.close();
+    }
+    catch (const char *err)
+    {
+        fprintf(stderr, "%s\n", err);
+        ofs.close();
+        return false;
+    }
+    return true;
 }
 
 
 void Image::filterRed()
 {
-
+    // filter red channel
+    for (int i = 0; i < w * h; ++i)
+    {
+        pixels[i].r = pixels[i].r;
+        pixels[i].g = 0;
+        pixels[i].b = 0;
+    }
 }
 void Image::filterGreen()
 {
-
+    // filter green channel
+    for (int i = 0; i < w * h; ++i)
+    {
+        pixels[i].r = 0;
+        pixels[i].g = pixels[i].g;
+        pixels[i].b = 0;
+    }
 }
 void Image::filterBlue()
 {
-
+    // filter blue channel
+    for (int i = 0; i < w * h; ++i)
+    {
+        pixels[i].r = 0;
+        pixels[i].g = 0;
+        pixels[i].b = pixels[i].b;
+    }
 }
+
 void Image::greyScale()
 {
-
+    // convert to grey scale
+    for (int i = 0; i < w * h; ++i)
+    {
+        pixels[i].r = (pixels[i].r + pixels[i].g + pixels[i].b) / 3;
+        pixels[i].g = (pixels[i].r + pixels[i].g + pixels[i].b) / 3;
+        pixels[i].b = (pixels[i].r + pixels[i].g + pixels[i].b) / 3;
+    }
 }
 void Image::flipHorizontal()
 {
+    for (int i = 0; i < h; ++i)
+    {
+        for(int j = 0; j < w/2; ++j)
+        {
 
+            int temp = pixels[i * w + j].r;
+            pixels[i * w + j].r = pixels[i * w + w - j - 1].r;
+            pixels[i * w + w - j - 1].r = temp;
 
+            temp = pixels[i * w + j].g;
+            pixels[i * w + j].g = pixels[i * w + w - j - 1].g;
+            pixels[i * w + w - j - 1].g = temp;
+
+            temp = pixels[i * w + j].b;
+            pixels[i * w + j].b = pixels[i * w + w - j - 1].b;
+            pixels[i * w + w - j - 1].b = temp;
+        }
+    }
 }
+
 void Image::flipVertically()
 {
+    for(int j = 0; j < w; ++j)
+    {
+        for(int i = 0; i < h/2; ++i)
+        {
 
+            int temp = pixels[i * w + j].r;
+            pixels[i * w + j].r = pixels[(h - i - 1) * w + j].r;
+            pixels[(h - i - 1) * w + j].r = temp;
 
+            temp = pixels[i * w + j].g;
+            pixels[i * w + j].g = pixels[(h - i - 1) * w + j].g;
+            pixels[(h - i - 1) * w + j].g = temp;
+
+            temp = pixels[i * w + j].b;
+            pixels[i * w + j].b = pixels[(h - i - 1) * w + j].b;
+            pixels[(h - i - 1) * w + j].b = temp;
+        }
+    }
 }
 void Image::AdditionalFunction2()
 {
