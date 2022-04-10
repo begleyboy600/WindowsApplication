@@ -7,8 +7,6 @@
 #include <cstring>
 #include "Image.h"
 
-
-
 bool Image::load(string filename)
 {
     std::ifstream ifs;
@@ -30,12 +28,12 @@ bool Image::load(string filename)
         this->pixels = new Rgb[w * h]; // this is throw an exception if bad_alloc
         ifs.ignore(256, '\n'); // skip empty lines in necessary until we get to the binary data
         unsigned char pix[3]; // read each pixel one by one and convert bytes to floats
-        for (int i = 0; i < w * h; ++i)
+        for (int x = 0; x < w * h; ++x)
         {
             ifs.read(reinterpret_cast<char *>(pix), 3);
-            this->pixels[i].r = pix[0];
-            this->pixels[i].g = pix[1];
-            this->pixels[i].b = pix[2];
+            this->pixels[x].r = pix[0];
+            this->pixels[x].g = pix[1];
+            this->pixels[x].b = pix[2];
         }
         ifs.close();
     }
@@ -68,12 +66,12 @@ bool Image::loadRaw(string filename)
         this->pixels = new Rgb[w * h]; // this is throw an exception if bad_alloc
         ifs.ignore(256, '\n'); // skip empty lines in necessary until we get to the binary data
         unsigned char pix[3]; // read each pixel one by one and convert bytes to floats
-        for (int i = 0; i < w * h; ++i)
+        for (int x = 0; x < w * h; ++x)
         {
             ifs.read(reinterpret_cast<char *>(pix), 3);
-            this->pixels[i].r = pix[0];
-            this->pixels[i].g = pix[1];
-            this->pixels[i].b = pix[2];
+            this->pixels[x].r = pix[0];
+            this->pixels[x].g = pix[1];
+            this->pixels[x].b = pix[2];
         }
         ifs.close();
     }
@@ -97,9 +95,9 @@ bool Image::savePPM(string filename)
             throw("Can't open output file");
         }
         ofs << "P6\n" << w << " " << h << "\n255\n";
-        for (int i = 0; i < w * h; ++i)
+        for (int x = 0; x < w * h; ++x)
         {
-            ofs << static_cast<unsigned char>(pixels[i].r) << static_cast<unsigned char>(pixels[i].g) << static_cast<unsigned char>(pixels[i].b);
+            ofs << static_cast<unsigned char>(pixels[x].r) << static_cast<unsigned char>(pixels[x].g) << static_cast<unsigned char>(pixels[x].b);
         }
         ofs.close();
     }
@@ -111,103 +109,162 @@ bool Image::savePPM(string filename)
     }
     return true;
 }
-
-
 void Image::filterRed()
 {
     // filter red channel
-    for (int i = 0; i < w * h; ++i)
+    for (int x = 0; x < w * h; ++x)
     {
-        pixels[i].r = pixels[i].r;
-        pixels[i].g = 0;
-        pixels[i].b = 0;
+        pixels[x].r = pixels[x].r;
+        pixels[x].g = 0;
+        pixels[x].b = 0;
     }
 }
 void Image::filterGreen()
 {
     // filter green channel
-    for (int i = 0; i < w * h; ++i)
+    for (int x = 0; x < w * h; ++x)
     {
-        pixels[i].r = 0;
-        pixels[i].g = pixels[i].g;
-        pixels[i].b = 0;
+        pixels[x].r = 0;
+        pixels[x].g = pixels[x].g;
+        pixels[x].b = 0;
     }
 }
 void Image::filterBlue()
 {
     // filter blue channel
-    for (int i = 0; i < w * h; ++i)
+    for (int x = 0; x < w * h; ++x)
     {
-        pixels[i].r = 0;
-        pixels[i].g = 0;
-        pixels[i].b = pixels[i].b;
+        pixels[x].r = 0;
+        pixels[x].g = 0;
+        pixels[x].b = pixels[x].b;
     }
 }
-
 void Image::greyScale()
 {
     // convert to grey scale
-    for (int i = 0; i < w * h; ++i)
+    for (int x = 0; x < w * h; ++x)
     {
-        pixels[i].r = (pixels[i].r + pixels[i].g + pixels[i].b) / 3;
-        pixels[i].g = (pixels[i].r + pixels[i].g + pixels[i].b) / 3;
-        pixels[i].b = (pixels[i].r + pixels[i].g + pixels[i].b) / 3;
+        pixels[x].r = (pixels[x].r + pixels[x].g + pixels[x].b) / 3;
+        pixels[x].g = (pixels[x].r + pixels[x].g + pixels[x].b) / 3;
+        pixels[x].b = (pixels[x].r + pixels[x].g + pixels[x].b) / 3;
     }
 }
 void Image::flipHorizontal()
 {
-    for (int i = 0; i < h; ++i)
+    for (int x = 0; x < h; ++x)
     {
-        for(int j = 0; j < w/2; ++j)
+        for(int y = 0; y < w/2; ++y)
         {
 
-            int temp = pixels[i * w + j].r;
-            pixels[i * w + j].r = pixels[i * w + w - j - 1].r;
-            pixels[i * w + w - j - 1].r = temp;
+            int temp = pixels[x * w + y].r;
+            pixels[x * w + y].r = pixels[x * w + w - y - 1].r;
+            pixels[x * w + w - y - 1].r = temp;
 
-            temp = pixels[i * w + j].g;
-            pixels[i * w + j].g = pixels[i * w + w - j - 1].g;
-            pixels[i * w + w - j - 1].g = temp;
+            temp = pixels[x * w + y].g;
+            pixels[x * w + y].g = pixels[x * w + w - y - 1].g;
+            pixels[x * w + w - y - 1].g = temp;
 
-            temp = pixels[i * w + j].b;
-            pixels[i * w + j].b = pixels[i * w + w - j - 1].b;
-            pixels[i * w + w - j - 1].b = temp;
+            temp = pixels[x * w + y].b;
+            pixels[x * w + y].b = pixels[x * w + w - y - 1].b;
+            pixels[x * w + w - y - 1].b = temp;
         }
     }
 }
-
 void Image::flipVertically()
 {
-    for(int j = 0; j < w; ++j)
+    for(int x = 0; x < w; ++x)
     {
-        for(int i = 0; i < h/2; ++i)
+        for(int y = 0; y < h/2; ++y)
         {
 
-            int temp = pixels[i * w + j].r;
-            pixels[i * w + j].r = pixels[(h - i - 1) * w + j].r;
-            pixels[(h - i - 1) * w + j].r = temp;
+            int temp = pixels[y * w + x].r;
+            pixels[y * w + x].r = pixels[(h - y - 1) * w + x].r;
+            pixels[(h - y - 1) * w + x].r = temp;
 
-            temp = pixels[i * w + j].g;
-            pixels[i * w + j].g = pixels[(h - i - 1) * w + j].g;
-            pixels[(h - i - 1) * w + j].g = temp;
+            temp = pixels[y * w + x].g;
+            pixels[y * w + x].g = pixels[(h - y - 1) * w + x].g;
+            pixels[(h - y - 1) * w + x].g = temp;
 
-            temp = pixels[i * w + j].b;
-            pixels[i * w + j].b = pixels[(h - i - 1) * w + j].b;
-            pixels[(h - i - 1) * w + j].b = temp;
+            temp = pixels[y * w + x].b;
+            pixels[y * w + x].b = pixels[(h - y - 1) * w + x].b;
+            pixels[(h - y - 1) * w + x].b = temp;
         }
     }
-}
-void Image::AdditionalFunction2()
-{
-
-}
-void Image::AdditionalFunction3()
-{
-
 }
 void Image::AdditionalFunction1()
 {
+    // add gaussian blur
+    for(int x = 0; x < h; ++x)
+    {
+        for(int y = 0; y < w; ++y)
+        {
+            int red = 0;
+            int green = 0;
+            int blue = 0;
+            for(int a = -1; a <= 1; ++a)
+            {
+                for(int b = -1; b <= 1; ++b)
+                {
+                    if(x + a >= 0 && x + a < h && y + b >= 0 && y + b < w)
+                    {
+                        red += pixels[(x + a) * w + (y + b)].r;
+                        green += pixels[(x + a) * w + (y + b)].g;
+                        blue += pixels[(x + a) * w + (y + b)].b;
+                    }
+                }
+            }
+            pixels[x * w + y].r = red / 10;
+            pixels[x * w + y].g = green / 10;
+            pixels[x * w + y].b = blue / 10;
+        }
+    }
 
+}
+void Image::AdditionalFunction2()
+{
+    Image temp_img(h, w);
+    unsigned int destination;
+    for(int x = 0; x < h; ++x)
+    {
+        for(int y = 0; y < w; ++y)
+        {
+            destination = (y * h) + (h - x - 1);
+            temp_img.pixels[destination] = pixels[(x * w) + y];
+        }
+    }
+    *this = temp_img;
+}
+Image& Image::operator=(const Image &imageRef)
+{
+    if(this != &imageRef) {
+        w = imageRef.w;
+        h = imageRef.h;
+        pixels = new Rgb[w * h];
+        for(int x = 0; x < w * h; ++x)
+        {
+            pixels[x] = imageRef.pixels[x];
+        }
+    }
+    return *this;
+}
+void Image::AdditionalFunction3()
+{
+    // add salt and pepper noise
+    for (int x = 0; x < w * h; ++x)
+    {
+        if (rand() % 100 < 10)
+        {
+            pixels[x].r = 0;
+            pixels[x].g = 0;
+            pixels[x].b = 0;
+        }
+        else if (rand() % 100 < 10)
+        {
+            pixels[x].r = 255;
+            pixels[x].g = 255;
+            pixels[x].b = 255;
+        }
+    }
 }
 
 /* Functions used by the GUI - DO NOT MODIFY */
@@ -225,3 +282,4 @@ Rgb* Image::getImage()
 {
     return pixels;
 }
+

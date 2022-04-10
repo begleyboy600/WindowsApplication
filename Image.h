@@ -51,12 +51,15 @@ public:
     void AdditionalFunction2();
     void AdditionalFunction3();
 
+    Image& operator=(const Image &ref);
+
     /*Functions used in the GUI - DO NOT MODIFY */
     Rgb* getImage();
     int getWidth();
     int getHeight();
     ~Image() { if (pixels != nullptr) delete [] pixels; }
 
+    unsigned char pow(unsigned char r, double d);
 };
 
 
