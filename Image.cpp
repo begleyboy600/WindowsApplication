@@ -7,6 +7,7 @@
 #include <cstring>
 #include "Image.h"
 
+
 bool Image::load(string filename)
 {
     std::ifstream ifs;
@@ -266,6 +267,74 @@ void Image::AdditionalFunction3()
         }
     }
 }
+void Image::AdditionalFunction4()
+{
+    // edge detection using roberts cross algorithm
+    // explanation: https://en.wikipedia.org/wiki/Roberts_cross_operator
+    for(int x = 0; x < h; ++x)
+    {
+        for(int y = 0; y < w; ++y)
+        {
+            int red = 0;
+            int green = 0;
+            int blue = 0;
+            if(x + 1 < h && y + 1 < w)
+            {
+                red = abs(pixels[(x + 1) * w + (y + 1)].r - pixels[(x + 1) * w + (y)].r) +
+                        abs(pixels[(x + 1) * w + (y + 1)].r - pixels[(x) * w + (y + 1)].r);
+
+                green = abs(pixels[(x + 1) * w + (y + 1)].g - pixels[(x + 1) * w + (y)].g) +
+                        abs(pixels[(x + 1) * w + (y + 1)].g - pixels[(x) * w + (y + 1)].g);
+
+                blue = abs(pixels[(x + 1) * w + (y + 1)].b - pixels[(x + 1) * w + (y)].b) +
+                        abs(pixels[(x + 1) * w + (y + 1)].b - pixels[(x) * w + (y + 1)].b);
+            }
+            pixels[x * w + y].r = red;
+            pixels[x * w + y].g = green;
+            pixels[x * w + y].b = blue;
+        }
+    }
+//    //
+//    Image temp_img(h, w);
+//    for(int x = 0; x < h; ++x)
+//    {
+//        for(int y = 0; y < w; ++y)
+//        {
+//            int red = 0;
+//            int green = 0;
+//            int blue = 0;
+//            for(int a = -1; a <= 1; ++a)
+//            {
+//                for(int b = -1; b <= 1; ++b)
+//                {
+//                    if(x + a >= 0 && x + a < h && y + b >= 0 && y + b < w)
+//                    {
+//                        red += pixels[(x + a) * w + (y + b)].r * sobel_operator[a + 1][b + 1];
+//                        green += pixels[(x + a) * w + (y + b)].g * sobel_operator[a + 1][b + 1];
+//                        blue += pixels[(x + a) * w + (y + b)].b * sobel_operator[a + 1][b + 1];
+//                    }
+//                }
+//            }
+//            temp_img.pixels[x * w + y].r = red;
+//            temp_img.pixels[x * w + y].g = green;
+//            temp_img.pixels[x * w + y].b = blue;
+//        }
+//    }
+
+}
+
+// add gamma correction using a float
+void Image::gammaCorrection()
+{
+    float gamma = 1/2.2;
+    for(int x = 0; x < w * h; ++x)
+    {
+        pixels[x].r = pow(pixels[x].r / 255.0f, gamma) * 255;
+        pixels[x].g = pow(pixels[x].g / 255.0f, gamma) * 255;
+        pixels[x].b = pow(pixels[x].b / 255.0f, gamma) * 255;
+    }
+}
+
 
 /* Functions used by the GUI - DO NOT MODIFY */
 int Image::getWidth()
@@ -282,4 +351,8 @@ Rgb* Image::getImage()
 {
     return pixels;
 }
+
+
+
+
 

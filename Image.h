@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <math.h>
 using namespace std;
 struct Rgb
 {
@@ -50,6 +51,8 @@ public:
     void AdditionalFunction1();
     void AdditionalFunction2();
     void AdditionalFunction3();
+    void AdditionalFunction4();
+    void gammaCorrection();
 
     Image& operator=(const Image &ref);
 
@@ -59,7 +62,7 @@ public:
     int getHeight();
     ~Image() { if (pixels != nullptr) delete [] pixels; }
 
-    unsigned char pow(unsigned char r, double d);
+    int sobel_operator(int, int);
 };
 
 
