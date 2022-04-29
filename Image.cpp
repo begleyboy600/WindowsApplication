@@ -294,32 +294,7 @@ void Image::AdditionalFunction4()
             pixels[x * w + y].b = blue;
         }
     }
-//    //
-//    Image temp_img(h, w);
-//    for(int x = 0; x < h; ++x)
-//    {
-//        for(int y = 0; y < w; ++y)
-//        {
-//            int red = 0;
-//            int green = 0;
-//            int blue = 0;
-//            for(int a = -1; a <= 1; ++a)
-//            {
-//                for(int b = -1; b <= 1; ++b)
-//                {
-//                    if(x + a >= 0 && x + a < h && y + b >= 0 && y + b < w)
-//                    {
-//                        red += pixels[(x + a) * w + (y + b)].r * sobel_operator[a + 1][b + 1];
-//                        green += pixels[(x + a) * w + (y + b)].g * sobel_operator[a + 1][b + 1];
-//                        blue += pixels[(x + a) * w + (y + b)].b * sobel_operator[a + 1][b + 1];
-//                    }
-//                }
-//            }
-//            temp_img.pixels[x * w + y].r = red;
-//            temp_img.pixels[x * w + y].g = green;
-//            temp_img.pixels[x * w + y].b = blue;
-//        }
-//    }
+
 
 }
 
